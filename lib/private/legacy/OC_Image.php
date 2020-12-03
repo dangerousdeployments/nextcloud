@@ -98,7 +98,14 @@ class OC_Image implements \OCP\IImage {
 	 * @return bool
 	 */
 	public function valid() { // apparently you can't name a method 'empty'...
-		return is_resource($this->resource);
+		if (is_resource($this->resource)) {
+			return true;
+		}
+		if (is_object($this->resource) && get_class($this->resource) === 'GdImage') {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
