@@ -82,9 +82,9 @@ class CapabilitiesTest extends \Test\TestCase {
 		];
 		$result = $this->getResults($map);
 		$this->assertFalse($result['api_enabled']);
-		$this->assertArrayNotHasKey('public', $result);
-		$this->assertArrayNotHasKey('user', $result);
-		$this->assertArrayNotHasKey('resharing', $result);
+		$this->assertFalse($result['public']['enabled']);
+		$this->assertFalse($result['user']['send_mail']);
+		$this->assertFalse($result['resharing']);
 	}
 
 	public function testNoLinkSharing() {
