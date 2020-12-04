@@ -351,7 +351,7 @@ class AppConfig implements IAppConfig {
 				$this->cache[$row['appid']] = [];
 			}
 
-			$this->cache[$row['appid']][$row['configkey']] = (string)$row['configvalue'];
+			$this->cache[(string)$row['appid']][(string)$row['configkey']] = (string)$row['configvalue'];
 		}
 		$result->closeCursor();
 
