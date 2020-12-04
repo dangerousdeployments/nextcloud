@@ -215,6 +215,61 @@ Feature: federated
 			| share_with | user2 |
 			| share_with_displayname | user2 |
 
+  Scenario: Reshare a federated shared on the same instance to another cloud id on the same instance
+    And Using server "LOCAL"
+    And user "user0" exists
+    And user "user1" exists
+    And user "user2" exists
+    And User "user0" uploads file "data/textfile.txt" to "/reshare.txt"
+    And User "user0" from server "LOCAL" shares "/reshare.txt" with user "user1" from server "LOCAL"
+    And User "user1" from server "LOCAL" accepts last pending share
+    And User "user1" from server "LOCAL" shares "/reshare.txt" with user "user2" from server "LOCAL"
+    And User "user2" from server "LOCAL" accepts last pending share
+    And Using server "LOCAL"
+    And As an "user2"
+    When Downloading file "/reshare.txt" with range "bytes=0-18"
+    Then Downloaded content should be "This is a testfile."
+
+
+  Scenario: Reshare a federated shared file to a federated user back to the original instance
+    Given Using server "REMOTE"
+    And user "user1" exists
+    And Using server "LOCAL"
+    And user "user0" exists
+    And user "user2" exists
+    And User "user0" uploads file "data/textfile.txt" to "/reshare.txt"
+    And User "user0" from server "LOCAL" shares "/reshare.txt" with user "user1" from server "REMOTE"
+    And User "user1" from server "REMOTE" accepts last pending share
+    And User "user1" from server "REMOTE" shares "/reshare.txt" with user "user2" from server "LOCAL"
+    And User "user2" from server "LOCAL" accepts last pending share
+    And Using server "LOCAL"
+    And As an "user2"
+    #And user "user2" uploads chunk file "1" of "3" with "AAAAA" to "/textfile0.txt"
+    #And user "user1" uploads chunk file "2" of "3" with "BBBBB" to "/textfile0 (2).txt"
+    #And user "user1" uploads chunk file "3" of "3" with "CCCCC" to "/textfile0 (2).txt"
+    When Downloading file "/reshare.txt" with range "bytes=0-18"
+    Then Downloaded content should be "This is a testfile."
+
+  Scenario: Reshare a federated shared file to a federated user on the same instance
+    Given Using server "REMOTE"
+    And user "user1" exists
+    And user "user2" exists
+    And Using server "LOCAL"
+    And user "user0" exists
+    And User "user0" uploads file "data/textfile.txt" to "/reshare2.txt"
+    And User "user0" from server "LOCAL" shares "/reshare2.txt" with user "user1" from server "REMOTE"
+    And User "user1" from server "REMOTE" accepts last pending share
+    And User "user1" from server "REMOTE" shares "/reshare2.txt" with user "user2" from server "REMOTE"
+    And User "user2" from server "REMOTE" accepts last pending share
+    And Using server "REMOTE"
+    And As an "user2"
+    #And user "user2" uploads chunk file "1" of "3" with "AAAAA" to "/textfile0.txt"
+    #And user "user1" uploads chunk file "2" of "3" with "BBBBB" to "/textfile0 (2).txt"
+    #And user "user1" uploads chunk file "3" of "3" with "CCCCC" to "/textfile0 (2).txt"
+    When Downloading file "/reshare2.txt" with range "bytes=0-18"
+    Then Downloaded content should be "This is a testfile."
+
+
 	Scenario: Overwrite a federated shared file as recipient
 		Given Using server "REMOTE"
 		And user "user1" exists
